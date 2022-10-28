@@ -22,31 +22,33 @@ const ProfileScreen = ({navigation, route}: {navigation: any; route: any}) => {
           rounded
           source={avatar_url !== '' ? {uri: avatar_url} : {}}
         />
-        <Text h2 style={{marginVertical: 4}}>
+        <Text h2 style={{marginVertical: 3}}>
           {username}
         </Text>
-        <Text h4 style={{marginVertical: 3}}>
+        <Text h4 style={{marginVertical: 2}}>
           {name}
         </Text>
-        <Text style={{marginVertical: 3}}>{description}</Text>
+        <Text style={{marginVertical: 5}}>{description}</Text>
         <View style={styles.row}>
           <Button
-            style={styles.button}
+            containerStyle={styles.button}
             title={`${followers} ${followers > 1 ? 'Followers' : 'Follower'}`}
             onPress={() =>
               navigation.navigate('Follow', {
                 url: followers_url,
                 type: 'followers',
+                username,
               })
             }
           />
           <Button
-            style={styles.button}
+            containerStyle={styles.button}
             title={`${following} Following`}
             onPress={() =>
               navigation.navigate('Follow', {
                 url: following_url,
                 type: 'following',
+                username,
               })
             }
           />
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   button: {
-    minWidth: 150,
+    minWidth: 120,
   },
   row: {
     marginVertical: 10,

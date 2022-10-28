@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Input, Button} from '@rneui/themed';
 import {Octokit} from '@octokit/rest';
 import CustomCard from '../components/CustomCard';
@@ -36,7 +36,6 @@ const SearchScreen = ({navigation}: any) => {
         });
       }
     } catch (error) {
-      console.log(error);
       setCardText({
         title: 'Username Not Found',
         body: 'Please try another username',
@@ -49,21 +48,16 @@ const SearchScreen = ({navigation}: any) => {
       {cardText.title !== '' ? (
         <CustomCard text={cardText} setCardText={setCardText} />
       ) : null}
-      <Text>Search Screen</Text>
       <Input
         autoCapitalize="none"
         onChangeText={setInput}
         value={input}
         placeholder="GitHub Username"
       />
-      <Button title="Search" onPress={() => searchUser(input)} />
       <Button
-        title="Go to Profile"
-        onPress={() =>
-          navigation.navigate('Profile', {
-            username: 'UVStudio',
-          })
-        }
+        containerStyle={styles.button}
+        title="Search"
+        onPress={() => searchUser(input)}
       />
     </View>
   );
@@ -74,6 +68,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  button: {
+    minWidth: 150,
   },
 });
 
