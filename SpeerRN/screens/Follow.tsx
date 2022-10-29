@@ -1,15 +1,21 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import axios from 'axios';
 import CustomCard from '../components/CustomCard';
 import {Avatar, Button, Text, ListItem} from '@rneui/themed';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {User} from '../utils/userType';
-import {RootStackParamList} from '../App';
+import {RootStackParamList} from '../navigation/AppNavigator';
 import {responseUserMapping} from '../utils/responseUser';
 import {initialCardText} from '../screens/Search';
 import {getUserOctokit} from '../utils/getUser';
-import {colorPrimaryTitle} from '../utils/theme';
+import {colorPrimary, colorPrimaryTitle} from '../utils/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Follow'>;
 
@@ -27,6 +33,8 @@ let responseUser = {
 const FollowScreen = ({navigation, route}: Props) => {
   const [profiles, setProfiles] = useState<User[]>([]);
   const [cardText, setCardText] = useState(initialCardText);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {login, type} = route.params;
   let url = route.params.url;
@@ -42,15 +50,23 @@ const FollowScreen = ({navigation, route}: Props) => {
   };
   cleanUrl();
 
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    const response = await axios.get(
+      `https://api.github.com/users/${login}/${type}`,
+    );
+    setLoading(false);
+    setProfiles(response.data);
+  }, [login, type]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(
-        `https://api.github.com/users/${login}/${type}`,
-      );
-      setProfiles(response.data);
-    };
     fetchData();
-  }, [type, login]);
+  }, [fetchData]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData().then(() => setRefreshing(false));
+  }, [fetchData]);
 
   const toProfile = async (profile: User) => {
     try {
@@ -78,30 +94,41 @@ const FollowScreen = ({navigation, route}: Props) => {
         {cardText.title !== '' ? (
           <CustomCard text={cardText} setCardText={setCardText} />
         ) : null}
-        <ScrollView style={{width: '100%'}}>
+        <ScrollView
+          style={styles.scrollViewStyle}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           <Text h4 style={styles.title}>
             {login}'s {type}
           </Text>
-          <View>
-            {profiles
-              ? profiles.map((profile: User, i: number) => (
-                  <ListItem
-                    onPress={() => toProfile(profile)}
-                    key={i}
-                    bottomDivider>
-                    <Avatar
-                      size={64}
-                      rounded
-                      source={{uri: profile.avatar_url}}
-                    />
-                    <ListItem.Content>
-                      <ListItem.Title>{profile.login}</ListItem.Title>
-                    </ListItem.Content>
-                    <ListItem.Chevron />
-                  </ListItem>
-                ))
-              : null}
-          </View>
+          {loading ? (
+            <ActivityIndicator size="large" color={colorPrimary} />
+          ) : (
+            <View>
+              {profiles
+                ? profiles.map((profile: User, i: number) => (
+                    <ListItem
+                      onPress={() => toProfile(profile)}
+                      key={i}
+                      bottomDivider>
+                      <Avatar
+                        size={64}
+                        rounded
+                        source={
+                          profile.avatar_url ? {uri: profile.avatar_url} : {}
+                        }
+                      />
+                      <ListItem.Content>
+                        <ListItem.Title>{profile.login}</ListItem.Title>
+                      </ListItem.Content>
+                      <ListItem.Chevron />
+                    </ListItem>
+                  ))
+                : null}
+            </View>
+          )}
+
           <View>
             <Button
               containerStyle={styles.button}
@@ -137,6 +164,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    width: '100%',
+  },
+  scrollViewStyle: {
     width: '100%',
   },
   title: {

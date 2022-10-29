@@ -15,7 +15,6 @@ interface CardProps {
 }
 
 const CustomCard = (props: CardProps) => {
-  console.log('props: ', props);
   const {text, setCardText} = props;
 
   return (
@@ -39,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    width: '88%',
+    width: '80%',
     height: 200,
     backgroundColor: '#fff',
     opacity: 1,

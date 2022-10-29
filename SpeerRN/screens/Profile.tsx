@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Avatar, Button, Text} from '@rneui/themed';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../App';
+import {RootStackParamList} from '../navigation/AppNavigator';
 import {colorPrimaryTitle} from '../utils/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
