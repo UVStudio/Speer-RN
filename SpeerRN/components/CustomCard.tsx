@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Text, Button} from '@rneui/themed';
 import {initialCardText} from '../screens/Search';
+import {colorCardBorder} from '../utils/theme';
 
 interface TextType {
   title: string;
@@ -42,9 +43,9 @@ const styles = StyleSheet.create({
     height: 200,
     backgroundColor: '#fff',
     opacity: 1,
-    borderWidth: 5,
+    borderWidth: 3,
     borderRadius: 10,
-    borderColor: 'red',
+    borderColor: colorCardBorder,
     //iOS shadow
     shadowColor: '#171717',
     shadowOffset: {width: 2, height: 4},
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   body: {
+    fontSize: 14,
     marginBottom: 5,
   },
   button: {

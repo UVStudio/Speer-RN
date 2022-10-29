@@ -3,15 +3,16 @@ import {View, StyleSheet} from 'react-native';
 import {Avatar, Button, Text} from '@rneui/themed';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
+import {colorPrimaryTitle} from '../utils/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
 const ProfileScreen = ({navigation, route}: Props) => {
   const {
     avatar_url,
-    username,
+    login,
     name,
-    description,
+    bio,
     followers,
     followers_url,
     following,
@@ -21,18 +22,21 @@ const ProfileScreen = ({navigation, route}: Props) => {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.center}>
-        <Avatar
-          size={256}
-          rounded
-          source={avatar_url !== '' ? {uri: avatar_url} : {}}
-        />
-        <Text h2 style={{marginVertical: 3}}>
-          {username}
+        <View>
+          <Avatar
+            containerStyle={styles.containerStyle}
+            size={256}
+            rounded
+            source={avatar_url !== '' ? {uri: avatar_url} : {}}
+          />
+        </View>
+        <Text h2 style={styles.h2Style}>
+          {login}
         </Text>
-        <Text h4 style={{marginVertical: 2}}>
+        <Text h4 style={styles.h4Style}>
           {name}
         </Text>
-        <Text style={{marginVertical: 5}}>{description}</Text>
+        <Text style={styles.body}>{bio}</Text>
         <View style={styles.row}>
           <Button
             containerStyle={styles.button}
@@ -41,7 +45,7 @@ const ProfileScreen = ({navigation, route}: Props) => {
               navigation.push('Follow', {
                 url: followers_url,
                 type: 'followers',
-                username,
+                login,
               })
             }
           />
@@ -52,7 +56,7 @@ const ProfileScreen = ({navigation, route}: Props) => {
               navigation.push('Follow', {
                 url: following_url,
                 type: 'following',
-                username,
+                login,
               })
             }
           />
@@ -82,11 +86,31 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     width: '100%',
   },
-  textMargins: {
-    marginVertical: 8,
+  h2Style: {
+    color: colorPrimaryTitle,
+    fontWeight: '700',
+  },
+  h4Style: {
+    color: colorPrimaryTitle,
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  body: {
+    fontSize: 14,
+    marginVertical: 5,
+  },
+  containerStyle: {
+    marginBottom: 15,
+    //iOS shadow
+    shadowColor: '#171717',
+    shadowOffset: {width: 2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    //android shadow
+    elevation: 10,
   },
 });
 

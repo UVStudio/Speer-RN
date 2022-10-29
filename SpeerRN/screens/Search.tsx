@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Input, Button} from '@rneui/themed';
-import {Octokit} from '@octokit/rest';
 import CustomCard from '../components/CustomCard';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
+import {responseUserMapping} from '../utils/responseUser';
+import {getUserOctokit} from '../utils/getUser';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Search'>;
 
@@ -15,14 +16,25 @@ export const initialCardText = {
 
 export interface UserObject {
   avatar_url: string;
-  username: string;
+  login: string;
   name: string;
-  description: string;
+  bio: string;
   followers: number;
   followers_url: string;
   following: number;
   following_url: string;
 }
+
+let responseUser = {
+  avatar_url: '',
+  login: '',
+  name: '',
+  bio: '',
+  followers: 0,
+  followers_url: '',
+  following: 0,
+  following_url: '',
+};
 
 const SearchScreen = ({navigation}: Props) => {
   const [input, setInput] = useState('');
@@ -30,21 +42,11 @@ const SearchScreen = ({navigation}: Props) => {
 
   const searchUser = async (inputParam: string) => {
     try {
-      const octokit = new Octokit({});
-      const response = await octokit.request('GET /users/{username}', {
-        username: inputParam,
-      });
-      if (response.data.id > 0) {
-        const responseUser = {
-          avatar_url: response.data.avatar_url,
-          username: response.data.login,
-          name: response.data.name!,
-          description: response.data.bio!,
-          followers: response.data.followers,
-          followers_url: response.data.followers_url,
-          following: response.data.following,
-          following_url: response.data.following_url,
-        };
+      const response = await getUserOctokit(inputParam);
+      //catch edge cases from GitHub API
+      if (response.data.id > -1 && response.data.login !== '') {
+        responseUser = responseUserMapping(responseUser, response.data);
+
         setInput('');
         navigation.navigate('Profile', {
           user: responseUser,
@@ -64,6 +66,7 @@ const SearchScreen = ({navigation}: Props) => {
         <CustomCard text={cardText} setCardText={setCardText} />
       ) : null}
       <Input
+        leftIcon={{type: 'font-material', name: 'search'}}
         autoCapitalize="none"
         onChangeText={setInput}
         value={input}

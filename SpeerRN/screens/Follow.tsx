@@ -1,23 +1,40 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import axios from 'axios';
-import {Octokit} from '@octokit/rest';
+import CustomCard from '../components/CustomCard';
 import {Avatar, Button, Text, ListItem} from '@rneui/themed';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {User} from '../utils/userType';
 import {RootStackParamList} from '../App';
+import {responseUserMapping} from '../utils/responseUser';
+import {initialCardText} from '../screens/Search';
+import {getUserOctokit} from '../utils/getUser';
+import {colorPrimaryTitle} from '../utils/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Follow'>;
 
+let responseUser = {
+  avatar_url: '',
+  login: '',
+  name: '',
+  bio: '',
+  followers: 0,
+  followers_url: '',
+  following: 0,
+  following_url: '',
+};
+
 const FollowScreen = ({navigation, route}: Props) => {
   const [profiles, setProfiles] = useState<User[]>([]);
+  const [cardText, setCardText] = useState(initialCardText);
 
-  const {username, type} = route.params;
+  const {login, type} = route.params;
   let url = route.params.url;
+
   //there seems to be an error with the url returned for following_url
-  //eg: https://api.github.com/users/UVStudio/following{/other_user}
+  //eg - it is: https://api.github.com/users/UVStudio/following{/other_user}
   //it should be: https://api.github.com/users/UVStudio/following
-  //the below code cleans
+  //the cleanUrl function cleans it up
   const cleanUrl = () => {
     if (type === 'following') {
       url = url.slice(0, -13);
@@ -28,39 +45,42 @@ const FollowScreen = ({navigation, route}: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(
-        `https://api.github.com/users/${username}/${type}`,
+        `https://api.github.com/users/${login}/${type}`,
       );
       setProfiles(response.data);
     };
     fetchData();
-  }, [type, username]);
+  }, [type, login]);
 
   const toProfile = async (profile: User) => {
-    const octokit = new Octokit({});
-    const response = await octokit.request('GET /users/{username}', {
-      username: profile.login,
-    });
-    const responseUser = {
-      avatar_url: response.data.avatar_url,
-      username: response.data.login,
-      name: response.data.name!,
-      description: response.data.bio!,
-      followers: response.data.followers,
-      followers_url: response.data.followers_url,
-      following: response.data.following,
-      following_url: response.data.following_url,
-    };
-    navigation.push('Profile', {
-      user: responseUser,
-    });
+    try {
+      const response = await getUserOctokit(profile.login);
+
+      //catch edge cases from GitHub API
+      if (response.data.id > -1 && response.data.login !== '') {
+        responseUser = responseUserMapping(responseUser, response.data);
+
+        navigation.push('Profile', {
+          user: responseUser,
+        });
+      }
+    } catch (error) {
+      setCardText({
+        title: 'Server Error',
+        body: 'Please try again later',
+      });
+    }
   };
 
   return (
     <View style={styles.outerContainer}>
       <View style={styles.center}>
+        {cardText.title !== '' ? (
+          <CustomCard text={cardText} setCardText={setCardText} />
+        ) : null}
         <ScrollView style={{width: '100%'}}>
           <Text h4 style={styles.title}>
-            {username}'s {type}
+            {login}'s {type}
           </Text>
           <View>
             {profiles
@@ -120,7 +140,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    marginVertical: 8,
+    marginVertical: 20,
+    color: colorPrimaryTitle,
     alignSelf: 'center',
   },
 });

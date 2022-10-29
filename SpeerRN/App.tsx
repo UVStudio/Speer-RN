@@ -14,7 +14,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SearchScreen, {UserObject} from './screens/Search';
 import ProfileScreen from './screens/Profile';
 import FollowScreen from './screens/Follow';
-import {ThemeProvider} from '@rneui/themed';
+import {ThemeProvider, Icon} from '@rneui/themed';
 import {colorPrimary, theme} from './utils/theme';
 
 interface userParam {
@@ -24,7 +24,7 @@ interface userParam {
 export type RootStackParamList = {
   Search: undefined;
   Profile: userParam;
-  Follow: {username: string; type: string; url: string};
+  Follow: {login: string; type: string; url: string};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,7 +47,21 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator screenOptions={defaultNavOptions}>
           <Stack.Screen name="Search" component={SearchScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={({navigation}) => ({
+              headerRight: () => (
+                <Icon
+                  size={30}
+                  color="white"
+                  type="material"
+                  name="search"
+                  onPress={() => navigation.navigate('Search')}
+                />
+              ),
+            })}
+          />
           <Stack.Screen name="Follow" component={FollowScreen} />
         </Stack.Navigator>
       </NavigationContainer>
