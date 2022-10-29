@@ -7,7 +7,7 @@ import CustomCard from '../components/CustomCard';
 import {responseUserMapping} from '../utils/responseUser';
 import {getUserOctokit} from '../utils/getUser';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Search'>;
+export type Props = NativeStackScreenProps<RootStackParamList, 'Search'>;
 
 export const initialCardText = {
   title: '',
@@ -46,6 +46,7 @@ const SearchScreen = ({navigation}: Props) => {
       setLoading(true);
       const response = await getUserOctokit(inputParam);
       setLoading(false);
+
       //catch edge cases from GitHub API
       if (response.data.id > -1 && response.data.login !== '') {
         responseUser = responseUserMapping(responseUser, response.data);

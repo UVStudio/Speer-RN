@@ -63,9 +63,10 @@ const FollowScreen = ({navigation, route}: Props) => {
     fetchData();
   }, [fetchData]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    fetchData().then(() => setRefreshing(false));
+    await fetchData();
+    setRefreshing(false);
   }, [fetchData]);
 
   const toProfile = async (profile: User) => {
@@ -99,10 +100,17 @@ const FollowScreen = ({navigation, route}: Props) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          <Text h4 style={styles.title}>
-            {login}'s {type}
-          </Text>
-          {loading ? (
+          {type === 'followers' ? (
+            <Text h4 style={styles.title}>
+              {login}'s {type}:
+            </Text>
+          ) : (
+            <Text h4 style={styles.title}>
+              {login} is {type}:
+            </Text>
+          )}
+
+          {loading && !refreshing ? (
             <ActivityIndicator size="large" color={colorPrimary} />
           ) : (
             <View>
