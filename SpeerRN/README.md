@@ -13,4 +13,4 @@ A log of hours worked:
 8:30pm to 10pm - fixed types, improved style, fixed follow logic to infinite profile push
 5:30am to 7:00am - refactored, improved styling, header right navigation
 8am to 9:30am - refactored nav. Improved UI
-10:30am to 11am - clean up, README.md
+10:30am to 11am - clean up, README.md - nominally finished
