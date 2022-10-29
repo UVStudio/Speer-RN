@@ -3,13 +3,28 @@ import {View, StyleSheet} from 'react-native';
 import {Input, Button} from '@rneui/themed';
 import {Octokit} from '@octokit/rest';
 import CustomCard from '../components/CustomCard';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../App';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Search'>;
 
 export const initialCardText = {
   title: '',
   body: '',
 };
 
-const SearchScreen = ({navigation}: any) => {
+export interface UserObject {
+  avatar_url: string;
+  username: string;
+  name: string;
+  description: string;
+  followers: number;
+  followers_url: string;
+  following: number;
+  following_url: string;
+}
+
+const SearchScreen = ({navigation}: Props) => {
   const [input, setInput] = useState('');
   const [cardText, setCardText] = useState(initialCardText);
 
@@ -73,16 +88,5 @@ const styles = StyleSheet.create({
     minWidth: 150,
   },
 });
-
-// const initalUserObject = {
-//   avatar_url: '',
-//   username: '',
-//   name: '',
-//   description: '',
-//   followers: 0,
-//   followers_url: '',
-//   following: 0,
-//   following_url: '',
-// };
 
 export default SearchScreen;

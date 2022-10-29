@@ -1,8 +1,12 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Avatar, Button, Text} from '@rneui/themed';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../App';
 
-const ProfileScreen = ({navigation, route}: {navigation: any; route: any}) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
+
+const ProfileScreen = ({navigation, route}: Props) => {
   const {
     avatar_url,
     username,
@@ -34,7 +38,7 @@ const ProfileScreen = ({navigation, route}: {navigation: any; route: any}) => {
             containerStyle={styles.button}
             title={`${followers} ${followers > 1 ? 'Followers' : 'Follower'}`}
             onPress={() =>
-              navigation.navigate('Follow', {
+              navigation.push('Follow', {
                 url: followers_url,
                 type: 'followers',
                 username,
@@ -45,7 +49,7 @@ const ProfileScreen = ({navigation, route}: {navigation: any; route: any}) => {
             containerStyle={styles.button}
             title={`${following} Following`}
             onPress={() =>
-              navigation.navigate('Follow', {
+              navigation.push('Follow', {
                 url: following_url,
                 type: 'following',
                 username,

@@ -1,26 +1,36 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Button} from '@rneui/themed';
+import {View, StyleSheet} from 'react-native';
+import {Text, Button} from '@rneui/themed';
 import {initialCardText} from '../screens/Search';
 
-const CustomCard = (props: any) => {
+interface TextType {
+  title: string;
+  body: string;
+}
+
+interface CardProps {
+  setCardText: React.Dispatch<React.SetStateAction<TextType>>;
+  text: TextType;
+}
+
+const CustomCard = (props: CardProps) => {
   console.log('props: ', props);
   const {text, setCardText} = props;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{text.title}</Text>
-      <Text>{text.body}</Text>
+      <Text h4 style={styles.title}>
+        {text.title}
+      </Text>
+      <Text style={styles.body}>{text.body}</Text>
       <Button
-        style={styles.button}
+        containerStyle={styles.button}
         title="Ok"
         onPress={() => setCardText(initialCardText)}
       />
     </View>
   );
 };
-
-//onPress={props.setCardText('')}
 
 const styles = StyleSheet.create({
   container: {
@@ -45,12 +55,14 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   title: {
-    fontSize: 16,
+    marginBottom: 8,
+  },
+  body: {
     marginBottom: 5,
   },
   button: {
-    margin: 5,
-    width: 100,
+    marginTop: 15,
+    width: 150,
   },
 });
 

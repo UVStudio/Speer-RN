@@ -11,21 +11,47 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SearchScreen from './screens/Search';
+import SearchScreen, {UserObject} from './screens/Search';
 import ProfileScreen from './screens/Profile';
 import FollowScreen from './screens/Follow';
+import {ThemeProvider} from '@rneui/themed';
+import {colorPrimary, theme} from './utils/theme';
 
-const Stack = createNativeStackNavigator();
+interface userParam {
+  user: UserObject;
+}
+
+export type RootStackParamList = {
+  Search: undefined;
+  Profile: userParam;
+  Follow: {username: string; type: string; url: string};
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const defaultNavOptions = {
+  title: 'GitHub User Search App',
+  headerStyle: {
+    backgroundColor: colorPrimary,
+  },
+  headerTitleStyle: {
+    fontSize: 22,
+  },
+  headerBackTitleVisible: false,
+  headerTintColor: 'white',
+};
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{title: 'GitHub User Search App'}}>
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Follow" component={FollowScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider theme={theme}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={defaultNavOptions}>
+          <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Follow" component={FollowScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 };
 

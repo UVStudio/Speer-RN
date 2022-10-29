@@ -3,9 +3,14 @@ import {View, StyleSheet, ScrollView} from 'react-native';
 import axios from 'axios';
 import {Octokit} from '@octokit/rest';
 import {Avatar, Button, Text, ListItem} from '@rneui/themed';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {User} from '../utils/userType';
+import {RootStackParamList} from '../App';
 
-const FollowScreen = ({navigation, route}: {navigation: any; route: any}) => {
-  const [profiles, setProfiles] = useState<any>();
+type Props = NativeStackScreenProps<RootStackParamList, 'Follow'>;
+
+const FollowScreen = ({navigation, route}: Props) => {
+  const [profiles, setProfiles] = useState<User[]>([]);
 
   const {username, type} = route.params;
   let url = route.params.url;
@@ -22,16 +27,15 @@ const FollowScreen = ({navigation, route}: {navigation: any; route: any}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await axios.get(
-        `https://api.github.com/users/UVStudio/${type}`,
+      const response = await axios.get(
+        `https://api.github.com/users/${username}/${type}`,
       );
-      setProfiles(resp.data);
+      setProfiles(response.data);
     };
     fetchData();
-  }, [type]);
+  }, [type, username]);
 
-  const toProfile = async (profile: any) => {
-    console.log('profile: ', profile);
+  const toProfile = async (profile: User) => {
     const octokit = new Octokit({});
     const response = await octokit.request('GET /users/{username}', {
       username: profile.login,
@@ -60,7 +64,7 @@ const FollowScreen = ({navigation, route}: {navigation: any; route: any}) => {
           </Text>
           <View>
             {profiles
-              ? profiles.map((profile: any, i: number) => (
+              ? profiles.map((profile: User, i: number) => (
                   <ListItem
                     onPress={() => toProfile(profile)}
                     key={i}
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
+    width: '90%',
   },
   button: {
     marginTop: 15,
